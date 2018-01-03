@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<body>
+
+<div class="login-page">
+    <div class="form">
+        <form class="register-form" action="/user/registration" th:object="${user}" method="POST" enctype="utf8">
+            <input type="text" id="name" name="name" placeholder="name" th:field="*{firstName}"/>
+            <p class="registration-alert" th:each="error: ${#fields.errors('firstName')}"
+               th:text="${error}">Validation error</p>
+
+            <input type="text" placeholder="lastname" th:field="*{lastName}"/>
+            <p class="registration-alert" th:each="error: ${#fields.errors('lastName')}"
+               th:text="${error}">Validation error</p>
+
+            <input type="email"  placeholder="email address" th:field="*{email}"/>
+
+            <p class="registration-alert" th:each="error : ${#fields.errors('email')}"
+               th:text="${error}">Validation error</p>
+
+            <input type="password" placeholder="password" th:field="*{password}"/>
+            <p class="registration-alert" th:each="error : ${#fields.errors('password')}"
+               th:text="${error}">Validation error</p>
+
+            <input type="password" placeholder="retype password" th:field="*{matchingPassword}"/>
+            <p class="registration-alert" th:each="error : ${#fields.errors('matchingPassword')}"
+               th:text="${error}">Validation error</p>
+
+            <button type="submit">register</button>
+            <p class="message">Already registered? <a th:href="@{/login}"><strong>Sign In</strong></a></p>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
