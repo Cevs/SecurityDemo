@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<body>
+<div class="login-page">
+    <div class="form">
+        <h3 th:text="${param.message[0]}">Error Message</h3>
+        <a th:href="@{/registration.html}" th:text="#{label.form.loginSignUp}">signup</a>
+    </div>
+</div>
+</body>
+</html>

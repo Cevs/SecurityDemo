@@ -21,6 +21,8 @@
             <div th:if="${param.logout}" class="notification">
                 You have been logged out.
             </div>
+            <div th:if="${param.error != null}"
+                 th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error</div>
         </form>
     </div>
 </div>
