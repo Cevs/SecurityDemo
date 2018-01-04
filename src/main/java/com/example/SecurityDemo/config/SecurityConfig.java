@@ -45,12 +45,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/user/registration*","/resources/**","/successRegister*",
+                .antMatchers("/registrationConfirm*","/badUser*","/user/registration*",
+                        "/emailError*","/resources/**","/successRegister*","/successRegister*",
                         "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .defaultSuccessUrl("/index.html")
+                .failureUrl("/login?error=true")
                 .permitAll();
     }
 }
