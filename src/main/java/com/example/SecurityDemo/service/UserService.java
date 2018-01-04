@@ -3,16 +3,17 @@ package com.example.SecurityDemo.service;
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.domain.Role;
 import com.example.SecurityDemo.domain.User;
+import com.example.SecurityDemo.domain.VerificationToken;
 import com.example.SecurityDemo.repositories.RoleRepository;
 import com.example.SecurityDemo.repositories.UserRepository;
+import com.example.SecurityDemo.repositories.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional
@@ -21,6 +22,8 @@ public class UserService implements IUserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    VerificationTokenRepository tokenRepository;
 
     @Override
     public User registerNewUserAccount(UserDto accountDto) throws EmailExistsException {
@@ -38,6 +41,28 @@ public class UserService implements IUserService {
         user.setRoles(getRoles());
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User getUser(String verificationToken) {
+        User user = tokenRepository.findByToken(verificationToken).getUser();
+        return user;
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String token) {
+        return  tokenRepository.findByToken(token);
+    }
+
+    @Override
+    public void saveRegisteredUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void createVerificationToken(User user, String token, LocalDateTime date) {
+        VerificationToken myToken = new VerificationToken(token, user, date);
+        tokenRepository.save(myToken);
     }
 
     private Set<Role> getRoles(){
