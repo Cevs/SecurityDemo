@@ -101,8 +101,21 @@
 }
 
 h1,h2,h3{
-    text-align: justify;
-    text-justify: inter-word;
+
+}
+
+#token{
+    display:none;
+}
+
+.login-message{
+    margin-top:10px;
+    margin-bottom:0 !important;
+    font-size: 11px;
+}
+
+.login-message p{
+    margin-bottom: 0;
 }
 
 body {

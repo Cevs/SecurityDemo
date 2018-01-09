@@ -1,6 +1,7 @@
 package com.example.SecurityDemo.controllers;
 
 import com.example.SecurityDemo.Dto.UserDto;
+import com.example.SecurityDemo.GenericResponse;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 import com.example.SecurityDemo.events.OnRegistrationCompleteEvent;
@@ -9,20 +10,21 @@ import com.example.SecurityDemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-import sun.misc.Request;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,6 +39,8 @@ public class RegistrationController {
     ApplicationEventPublisher eventPublisher;
     @Autowired
     private MessageSource messages;
+    @Autowired
+    private JavaMailSender mailSender;
 
     @RequestMapping(value="/user/registration", method = RequestMethod.GET)
     public String showRegistrationForm(WebRequest request, Model model){
@@ -71,14 +75,15 @@ public class RegistrationController {
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token){
+    public String confirmRegistration(WebRequest request, ModelMap model, @RequestParam("token") String token,
+                                      RedirectAttributes redirectAttributes){
 
         Locale locale = request.getLocale();
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if(verificationToken == null){
             String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
-            return "redirect:/badUser.html?lang="+locale.getLanguage();
+            return "redirect:/badUser";
         }
 
         User user = verificationToken.getUser();
@@ -86,12 +91,56 @@ public class RegistrationController {
         if(time.isAfter(verificationToken.getExpiryDate())){
             String messageValue = messages.getMessage("auth.message.expired", null, locale);
             model.addAttribute("message",messageValue);
-            return "redirect:/badUser.html?lang="+locale.getLanguage();
+            model.addAttribute("expired",true);
+            model.addAttribute("token",token);
+
+            redirectAttributes.addFlashAttribute("model",model);
+            return "redirect:/badUser";
         }
 
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
-        return "redirect:/index.html";
+        model.addAttribute("message",messages.getMessage("message.accountVerified",null,locale));
+        return "redirect:/login";
+    }
+
+    @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    @ResponseBody
+    public GenericResponse resendRegistrationToken(
+            HttpServletRequest request, @RequestParam("token") String existingToken) {
+
+        VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
+        User user = userService.getUser(newToken.getToken());
+        String appUrl =
+                "http://"+request.getServerName()+ ":"+request.getServerPort()+ request.getContextPath();
+        SimpleMailMessage email =
+                constructResendVerificationTokenEmail(appUrl, request.getLocale(),newToken, user);
+        mailSender.send(email);
+
+        return new GenericResponse(
+                messages.getMessage("message.resendToken",null, request.getLocale())
+        );
+    }
+
+    @RequestMapping("/badUser")
+    public ModelAndView BadUser(@ModelAttribute("model") ModelMap model){
+        return new ModelAndView("badUser",model);
+    }
+
+
+
+    private SimpleMailMessage constructResendVerificationTokenEmail
+            (String appUrl, Locale locale, VerificationToken newToken, User user) {
+
+        String confirmationUrl =
+                appUrl + "/registrationConfirm.html?token="+newToken.getToken();
+        String message = messages.getMessage("message.resendToken",null,locale);
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setSubject("Resend Registration Token");
+        email.setTo(user.getEmail());
+        email.setText(message+"\n"+confirmationUrl);
+        //email.setFrom(env.getProperty("support.email")); Potrebno autowired Environment klasu
+        return email;
     }
 
     //Replace default errors with custom for field validation

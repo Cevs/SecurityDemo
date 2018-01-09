@@ -20,4 +20,5 @@ public interface IUserService {
     VerificationToken getVerificationToken(String token);
 
 
+    VerificationToken generateNewVerificationToken(String existingToken);
 }

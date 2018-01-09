@@ -81,6 +81,10 @@ public class VerificationToken {
     }
 
     public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
+        this.expiryDate = expiryDate.plusHours(EXPIRATION);
+    }
+
+    public void updateToke(String token) {
+        this.token = token;
     }
 }

@@ -55,6 +55,15 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public VerificationToken generateNewVerificationToken(String existingToken) {
+        VerificationToken verificationToken = tokenRepository.findByToken(existingToken);
+        verificationToken.updateToke(UUID.randomUUID().toString());
+        verificationToken.setExpiryDate(LocalDateTime.now());
+        verificationToken = tokenRepository.save(verificationToken);
+        return verificationToken;
+    }
+
+    @Override
     public void saveRegisteredUser(User user) {
         userRepository.save(user);
     }
