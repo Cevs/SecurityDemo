@@ -8,8 +8,10 @@ import com.example.SecurityDemo.repositories.RoleRepository;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.repositories.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sun.security.util.Password;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -24,6 +26,8 @@ public class UserService implements IUserService {
     private RoleRepository roleRepository;
     @Autowired
     VerificationTokenRepository tokenRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public User registerNewUserAccount(UserDto accountDto) throws EmailExistsException {
@@ -36,7 +40,7 @@ public class UserService implements IUserService {
         User user = new User();
         user.setFirstName(accountDto.getFirstName());
         user.setLastName(accountDto.getLastName());
-        user.setPassword(accountDto.getPassword());
+        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
         user.setRoles(getRoles());
 
@@ -87,5 +91,4 @@ public class UserService implements IUserService {
         }
         return  false;
     }
-
 }

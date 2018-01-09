@@ -10,8 +10,11 @@ import com.example.SecurityDemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -41,6 +44,8 @@ public class RegistrationController {
     private MessageSource messages;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @RequestMapping(value="/user/registration", method = RequestMethod.GET)
     public String showRegistrationForm(WebRequest request, Model model){
