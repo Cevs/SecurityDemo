@@ -97,9 +97,15 @@
     color:red;
     font-size: 12px;
     padding:0;
-    margin: 0;
+    margin: 2px 0 0 0;
 }
 
+.input-alert{
+    border-bottom: 1px solid #98162A;
+}
+.input-ok{
+    border-bottom: 1px solid #357956;
+}
 h1,h2,h3{
 
 }

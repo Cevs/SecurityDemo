@@ -24,19 +24,20 @@
             <input type="password" id="password" name="password" placeholder="password"/>
             <button type="submit" >login</button>
 
-            <p class="message">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
-            <div th:if="${param.error}" class="notification">
-                Invalid username and password.
+            <div th:if="${param.error}" class="alert alert-danger login-message">
+                <strong>Invalid username or password.</strong>
             </div>
             <div th:if="${param.logout}" class="notification">
                 You have been logged out.
             </div>
-            <div th:if="${param.error != null}"
+            <!--<div th:if="${param.error != null}"
                  th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error
-            </div>
+            </div>-->
             <div th:if="${message}" class="alert alert-warning login-message" >
                 <strong><p th:text="${message}"></p></strong>
             </div>
+
+            <p class="message">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
 
         </form>
     </div>

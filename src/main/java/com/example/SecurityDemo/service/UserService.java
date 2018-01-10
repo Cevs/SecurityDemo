@@ -54,6 +54,15 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean checkIfExists(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isPresent()){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public VerificationToken getVerificationToken(String token) {
         return  tokenRepository.findByToken(token);
     }

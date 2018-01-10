@@ -132,7 +132,11 @@ public class RegistrationController {
         return new ModelAndView("badUser",model);
     }
 
-
+    @RequestMapping(value = "/user/exist", method = RequestMethod.POST, params="email")
+    @ResponseBody
+    public boolean checkUser(HttpServletRequest request, @RequestParam String email){
+          return userService.checkIfExists(email);
+    }
 
     private SimpleMailMessage constructResendVerificationTokenEmail
             (String appUrl, Locale locale, VerificationToken newToken, User user) {

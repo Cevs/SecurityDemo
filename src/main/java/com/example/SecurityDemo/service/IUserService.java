@@ -13,12 +13,13 @@ public interface IUserService {
 
     User getUser(String verificationToken);
 
+    boolean checkIfExists(String username);
+
     void saveRegisteredUser(User user);
 
     void createVerificationToken(User user, String token, LocalDateTime date);
 
     VerificationToken getVerificationToken(String token);
-
 
     VerificationToken generateNewVerificationToken(String existingToken);
 }
