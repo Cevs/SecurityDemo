@@ -1,6 +1,7 @@
 package com.example.SecurityDemo.service;
 
 import com.example.SecurityDemo.Dto.UserDto;
+import com.example.SecurityDemo.UserAlreadyExistException;
 import com.example.SecurityDemo.domain.Role;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
@@ -30,10 +31,10 @@ public class UserService implements IUserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public User registerNewUserAccount(UserDto accountDto) throws EmailExistsException {
+    public User registerNewUserAccount(UserDto accountDto) throws UserAlreadyExistException {
 
         if(emailExist(accountDto.getEmail())){
-            throw new EmailExistsException("There is an account with that email address: "
+            throw new UserAlreadyExistException("There is an account with that email address: "
             + accountDto.getEmail());
         }
 

@@ -1,6 +1,7 @@
 package com.example.SecurityDemo.service;
 
 import com.example.SecurityDemo.Dto.UserDto;
+import com.example.SecurityDemo.UserAlreadyExistException;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 
@@ -9,7 +10,7 @@ import java.util.Date;
 
 public interface IUserService {
     User registerNewUserAccount(UserDto accountDto)
-            throws EmailExistsException;
+            throws UserAlreadyExistException;
 
     User getUser(String verificationToken);
 
