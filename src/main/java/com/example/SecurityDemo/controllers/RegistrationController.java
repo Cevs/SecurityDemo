@@ -3,11 +3,9 @@ package com.example.SecurityDemo.controllers;
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.GenericResponse;
 import com.example.SecurityDemo.captcha.ICaptchaService;
-import com.example.SecurityDemo.captcha.ReCaptchaInvalidException;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 import com.example.SecurityDemo.events.OnRegistrationCompleteEvent;
-import com.example.SecurityDemo.service.EmailExistsException;
 import com.example.SecurityDemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,12 +57,10 @@ public class RegistrationController {
     @RequestMapping(value = "/user/registration",method = RequestMethod.POST)
     @ResponseBody
     public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request){
-        try{
-            String response = request.getParameter("g-recaptcha-response");
-            captchaService.processResponse(response);
-        }catch (ReCaptchaInvalidException e){
-            return new GenericResponse("failure");
-        }
+
+        String response = request.getParameter("g-recaptcha-response");
+        captchaService.processResponse(response);
+
         final User registered = userService.registerNewUserAccount(accountDto);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");

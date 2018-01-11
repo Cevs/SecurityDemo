@@ -11,9 +11,9 @@
 <body>
 
 <div class="login-page">
+    <span id="globalError" class="alert alert-danger col-sm-4" style="display:none"></span>
     <div class="form">
         <form class="register-form" action="/user/registration" th:object="${user}" method="POST" enctype="utf8" novalidate="novalidate">
-
             <input type="text" id="registration_fname" name="firstname" placeholder="name" th:field="*{firstName}" />
             <p class="registration-alert" th:each="error: ${#fields.errors('firstName')}"
                th:text="${error}">Validation error</p>
