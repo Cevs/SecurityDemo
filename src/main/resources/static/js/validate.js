@@ -46,14 +46,48 @@ $(document).ready(function () {
         check_repassword();
         if(error_fname === false && error_lname === false && error_email === false
             && error_email_exist === false && error_password === false && error_repassword === false){
-            //allow registration
+            console.log("fname:"+error_fname);
+            console.log("lname:"+error_lname);
+            console.log("email:"+error_email);
+            console.log("exist:"+error_email_exist);
+            console.log("passwrod:"+error_password);
+            console.log("repassword:"+error_repassword);
+            console.log("OK");
+            register(event);
         }else{
             //Prevent registraton
+            console.log("fname:"+error_fname);
+            console.log("lname:"+error_lname);
+            console.log("email:"+error_email);
+            console.log("exist:"+error_email_exist);
+            console.log("passwrod:"+error_password);
+            console.log("repassword:"+error_repassword);
+            console.log("not OK");
             event.preventDefault();
         }
     });
 
 });
+
+function register(event){
+
+    event.preventDefault();
+    serverContext = "http://localhost:8080";
+    var formData = $('form').serialize();
+    $.post(serverContext+"/user/registration",formData, function(data){
+        if(data.message === "success"){
+            window.location.replace(serverContext+"/successRegister.html");
+        }
+        else if(data.message === "failure" ){
+            grecaptcha.reset();
+        }
+        console.log("success");
+    })
+        .fail(function (data) {
+            grecaptcha.reset();
+        });
+
+}
 
 function check_fname(){
     var pattern = /^[a-zA-Z]*$/; //We want only letters
@@ -89,7 +123,7 @@ function check_email() {
     if (pattern.test(email) && email !== '') {
         $("#email_error_message").hide();
         $("#registration_email").css("border-bottom", "2px solid #34F458");
-        error_email = false;
+
     } else {
         $("#email_error_message").html("Invalid email");
         $("#email_error_message").show();
@@ -97,7 +131,10 @@ function check_email() {
         error_email = true;
     }
 
-    check_if_exists();
+    if(!error_email){
+        check_if_exists();
+    }
+
 
 }
 

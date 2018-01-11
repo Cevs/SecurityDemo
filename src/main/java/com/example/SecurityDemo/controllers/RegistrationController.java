@@ -2,6 +2,8 @@ package com.example.SecurityDemo.controllers;
 
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.GenericResponse;
+import com.example.SecurityDemo.captcha.ICaptchaService;
+import com.example.SecurityDemo.captcha.ReCaptchaInvalidException;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 import com.example.SecurityDemo.events.OnRegistrationCompleteEvent;
@@ -10,10 +12,8 @@ import com.example.SecurityDemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +46,8 @@ public class RegistrationController {
     private JavaMailSender mailSender;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    private ICaptchaService captchaService;
 
     @RequestMapping(value="/user/registration", method = RequestMethod.GET)
     public String showRegistrationForm(WebRequest request, Model model){
@@ -54,29 +56,18 @@ public class RegistrationController {
         return "registration";
     }
 
-    @RequestMapping(value = "/user/registration", method = RequestMethod.POST)
-    public ModelAndView registerUserAccount(@ModelAttribute("user") @Valid UserDto accountDto,
-                                            BindingResult result, WebRequest request, Errors errors){
-        User registered = new User();
-        if(!result.hasErrors()){
-            registered = createUserAccount(accountDto, result);
-        }
-        if(registered == null){
-            result.rejectValue("email", "message.regError");
-        }
-        if(result.hasErrors()){
-            replaceErrorsWithCustom(errors, result);
-            return new ModelAndView("registration","user",accountDto);
-        }
+    @RequestMapping(value = "/user/registration",method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse registerUserAccount(@Valid final UserDto accountDto, final HttpServletRequest request){
         try{
-            String appUrl = request.getContextPath();
-            eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-                    (registered, request.getLocale(), appUrl));
-        }catch (Exception e){
-            String s = e.getMessage();
-            return new ModelAndView("emailError","user",accountDto);
+            String response = request.getParameter("g-recaptcha-response");
+            captchaService.processResponse(response);
+        }catch (ReCaptchaInvalidException e){
+            return new GenericResponse("failure");
         }
-        return new ModelAndView("successRegister","user",accountDto);
+        final User registered = userService.registerNewUserAccount(accountDto);
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+        return new GenericResponse("success");
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
@@ -125,6 +116,11 @@ public class RegistrationController {
         return new GenericResponse(
                 messages.getMessage("message.resendToken",null, request.getLocale())
         );
+    }
+
+    @RequestMapping("/successRegister")
+    public String SuccessRegister(){
+        return "successRegister";
     }
 
     @RequestMapping("/badUser")
@@ -177,15 +173,8 @@ public class RegistrationController {
             }
         }
     }
-
-    private User createUserAccount(UserDto accountDto, BindingResult result){
-        User registered = null;
-        try{
-            registered = userService.registerNewUserAccount(accountDto);
-        }catch (EmailExistsException e){
-            return null;
-        }
-
-        return registered;
+    private String getAppUrl(HttpServletRequest request) {
+        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
+
 }
