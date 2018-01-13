@@ -1,6 +1,5 @@
 package com.example.SecurityDemo.config;
 
-import com.example.SecurityDemo.CustomWebAuthenticationDetails;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

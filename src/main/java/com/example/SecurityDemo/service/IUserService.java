@@ -1,12 +1,11 @@
 package com.example.SecurityDemo.service;
 
 import com.example.SecurityDemo.Dto.UserDto;
-import com.example.SecurityDemo.UserAlreadyExistException;
+import com.example.SecurityDemo.exceptions.UserAlreadyExistException;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public interface IUserService {
     User registerNewUserAccount(UserDto accountDto)

@@ -1,4 +1,4 @@
-package com.example.SecurityDemo;
+package com.example.SecurityDemo.exceptions;
 
 public class UserNotFoundException extends RuntimeException{
 

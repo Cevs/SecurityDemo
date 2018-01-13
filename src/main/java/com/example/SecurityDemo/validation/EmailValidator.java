@@ -1,4 +1,6 @@
-package com.example.SecurityDemo.Dto;
+package com.example.SecurityDemo.validation;
+
+import com.example.SecurityDemo.validation.ValidEmail;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

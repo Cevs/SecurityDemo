@@ -3,7 +3,7 @@ package com.example.SecurityDemo.controllers;
 import com.example.SecurityDemo.Dto.PasswordDto;
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.GenericResponse;
-import com.example.SecurityDemo.UserNotFoundException;
+import com.example.SecurityDemo.exceptions.UserNotFoundException;
 import com.example.SecurityDemo.captcha.ICaptchaService;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;

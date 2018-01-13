@@ -1,5 +1,7 @@
 package com.example.SecurityDemo.Dto;
 
+import com.example.SecurityDemo.validation.PasswordMatches;
+import com.example.SecurityDemo.validation.ValidEmail;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;

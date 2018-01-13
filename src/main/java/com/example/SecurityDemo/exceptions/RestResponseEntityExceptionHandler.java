@@ -1,6 +1,9 @@
-package com.example.SecurityDemo;
+package com.example.SecurityDemo.exceptions;
 
+import com.example.SecurityDemo.GenericResponse;
 import com.example.SecurityDemo.captcha.ReCaptchaInvalidException;
+import com.example.SecurityDemo.exceptions.UserAlreadyExistException;
+import com.example.SecurityDemo.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;

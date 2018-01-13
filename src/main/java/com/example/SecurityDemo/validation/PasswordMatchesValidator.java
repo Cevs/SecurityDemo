@@ -1,6 +1,5 @@
-package com.example.SecurityDemo.Dto;
+package com.example.SecurityDemo.validation;
 
-import com.example.SecurityDemo.Dto.PasswordMatches;
 import com.example.SecurityDemo.Dto.UserDto;
 
 import javax.validation.ConstraintValidator;

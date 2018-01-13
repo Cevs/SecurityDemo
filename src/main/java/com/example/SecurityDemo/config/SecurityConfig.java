@@ -1,7 +1,6 @@
 package com.example.SecurityDemo.config;
 
-import com.example.SecurityDemo.CustomAuthenticationFailureHandler;
-import com.example.SecurityDemo.CustomWebAuthenticationDetailsSource;
+import com.example.SecurityDemo.domain.CustomWebAuthenticationDetailsSource;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity

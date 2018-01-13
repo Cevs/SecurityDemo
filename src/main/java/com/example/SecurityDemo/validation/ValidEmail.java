@@ -1,4 +1,4 @@
-package com.example.SecurityDemo.Dto;
+package com.example.SecurityDemo.validation;
 
 import javax.validation.Payload;
 import java.lang.annotation.ElementType;

@@ -1,7 +1,7 @@
 package com.example.SecurityDemo.service;
 
 import com.example.SecurityDemo.Dto.UserDto;
-import com.example.SecurityDemo.UserAlreadyExistException;
+import com.example.SecurityDemo.exceptions.UserAlreadyExistException;
 import com.example.SecurityDemo.domain.PasswordResetToken;
 import com.example.SecurityDemo.domain.Role;
 import com.example.SecurityDemo.domain.User;
@@ -13,7 +13,6 @@ import com.example.SecurityDemo.repositories.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sun.security.util.Password;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
