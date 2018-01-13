@@ -2,14 +2,15 @@ package com.example.SecurityDemo.service;
 
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.UserAlreadyExistException;
+import com.example.SecurityDemo.domain.PasswordResetToken;
 import com.example.SecurityDemo.domain.Role;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
+import com.example.SecurityDemo.repositories.PasswordResetTokenRepository;
 import com.example.SecurityDemo.repositories.RoleRepository;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.repositories.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sun.security.util.Password;
@@ -27,6 +28,8 @@ public class UserService implements IUserService {
     private RoleRepository roleRepository;
     @Autowired
     VerificationTokenRepository tokenRepository;
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -75,6 +78,28 @@ public class UserService implements IUserService {
         verificationToken.setExpiryDate(LocalDateTime.now());
         verificationToken = tokenRepository.save(verificationToken);
         return verificationToken;
+    }
+
+    @Override
+    public User findUserByEmail(String userEmail) {
+        return userRepository.findByEmail(userEmail).get();
+    }
+
+    @Override
+    public void createPasswordResetTokenForUser(User user, String token) {
+        PasswordResetToken oldToken = passwordResetTokenRepository.findById(user.getId());
+        if(oldToken!= null){
+            passwordResetTokenRepository.delete(oldToken);
+        }
+        PasswordResetToken myToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(myToken);
+    }
+
+    @Override
+    public void changePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        passwordResetTokenRepository.delete(user.getId());
     }
 
     @Override

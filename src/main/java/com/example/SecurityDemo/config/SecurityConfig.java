@@ -44,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/login*","/registrationConfirm**","/badUser**","/user/registration*",
                         "/emailError*","/resources/**","/successRegister*","/successRegister*", "/user/exist*",
-                        "/user/resendRegistrationToken", "/css/**", "/js/**", "/images/**","/resources/**").permitAll()
+                        "/user/resendRegistrationToken","/forgetPassword", "/user/resetPassword*","/user/changePassword*",
+                        "/css/**", "/js/**", "/images/**","/resources/**").permitAll()
+                .antMatchers("/user/updatePassword","/user/savePassword*", "/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

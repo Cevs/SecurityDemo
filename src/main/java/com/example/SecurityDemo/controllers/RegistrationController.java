@@ -1,17 +1,21 @@
 package com.example.SecurityDemo.controllers;
 
+import com.example.SecurityDemo.Dto.PasswordDto;
 import com.example.SecurityDemo.Dto.UserDto;
 import com.example.SecurityDemo.GenericResponse;
+import com.example.SecurityDemo.UserNotFoundException;
 import com.example.SecurityDemo.captcha.ICaptchaService;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 import com.example.SecurityDemo.events.OnRegistrationCompleteEvent;
+import com.example.SecurityDemo.service.ISecurityUserService;
 import com.example.SecurityDemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +50,8 @@ public class RegistrationController {
     PasswordEncoder passwordEncoder;
     @Autowired
     private ICaptchaService captchaService;
+    @Autowired
+    private ISecurityUserService securityUserService;
 
     @RequestMapping(value="/user/registration", method = RequestMethod.GET)
     public String showRegistrationForm(WebRequest request, Model model){
@@ -130,17 +136,73 @@ public class RegistrationController {
           return userService.checkIfExists(email);
     }
 
+    @RequestMapping(value = "/user/changePassword", method = RequestMethod.GET)
+    public String showChangePasswordPage(Locale locale, Model model, @RequestParam("id") long id,
+                                         @RequestParam("token")String token){
+
+        String result = securityUserService.validatePasswordResetToken(id, token);
+        if(result != null){
+            model.addAttribute("message",messages.getMessage("auth.message."+result,
+                    null, locale));
+            return "redirect:/login?lang="+locale.getLanguage();
+        }
+        return "redirect:/user/updatePassword?lang="+locale.getLanguage();
+    }
+
+    @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse resetPassword(HttpServletRequest request, @RequestParam("email") String userEmail){
+        User user = userService.findUserByEmail(userEmail);
+        if(user == null){
+            throw new UserNotFoundException();
+        }
+
+        String token = UUID.randomUUID().toString();
+        userService.createPasswordResetTokenForUser(user, token);
+        mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
+
+        return new GenericResponse(messages.getMessage("message.resetPasswordEmail", null,
+                request.getLocale()));
+    }
+
+    @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse savePassword(Locale locale, @Valid PasswordDto passwordDto){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userService.changePassword(user,passwordDto.getNewPassword());
+
+        return new GenericResponse(messages.getMessage("message.resetPasswordSuc",null, locale));
+    }
+
+    @RequestMapping(value = "/forgetPassword")
+    public String forgetPassword(){
+        return "forgetPassword";
+    }
+
+    @RequestMapping(value = "/user/updatePassword")
+    public String updatePassword(){
+        return "updatePassword";
+    }
+    private SimpleMailMessage constructResetTokenEmail(String contextPath, Locale locale, String token, User user) {
+        String url = contextPath + "/user/changePassword?id="+user.getId() + "&token="+token;
+        String message = messages.getMessage("message.resetPassword", null, locale);
+        return constructEmail("Reset Password", message + " \r\n"+url,user);
+    }
+
     private SimpleMailMessage constructResendVerificationTokenEmail
             (String appUrl, Locale locale, VerificationToken newToken, User user) {
 
         String confirmationUrl =
                 appUrl + "/registrationConfirm.html?token="+newToken.getToken();
         String message = messages.getMessage("message.resendToken",null,locale);
+        return constructEmail("Resend Registration Token", message +" \r\n"+confirmationUrl, user);
+    }
+
+    private SimpleMailMessage constructEmail(String subject, String body, User user) {
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setSubject("Resend Registration Token");
+        email.setSubject(subject);
+        email.setText(body);
         email.setTo(user.getEmail());
-        email.setText(message+"\n"+confirmationUrl);
-        //email.setFrom(env.getProperty("support.email")); Potrebno autowired Environment klasu
         return email;
     }
 

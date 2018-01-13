@@ -23,4 +23,10 @@ public interface IUserService {
     VerificationToken getVerificationToken(String token);
 
     VerificationToken generateNewVerificationToken(String existingToken);
+
+    User findUserByEmail(String userEmail);
+
+    void createPasswordResetTokenForUser(User user, String token);
+
+    void changePassword(User user, String newPassword);
 }

@@ -23,6 +23,8 @@
             <input type="text" id="username" name="username" placeholder="username"/>
             <input type="password" id="password" name="password" placeholder="password"/>
             <button type="submit" >login</button>
+            <p class="message-forgot-password"><strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
+
 
             <div th:if="${param.error}" class="alert alert-danger login-message">
                 <strong>Invalid username or password.</strong>
