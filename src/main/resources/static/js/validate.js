@@ -13,6 +13,21 @@ $(document).ready(function () {
     $("#password_error_message").hide();
     $("#repassword_error_message").hide();
 
+    $("#registration_fname").keyup(function () {
+        check_fname();
+    });
+
+    $("#registration_lname").keyup(function () {
+        check_lname();
+    });
+
+    $("#registration_password").keyup(function () {
+        check_password();
+    });
+    $("#registration_repassword").keyup(function () {
+        check_repassword();
+    });
+
     $("#registration_fname").focusout(function () {
         check_fname();
     });
@@ -109,8 +124,8 @@ function register(event){
 }
 
 function check_fname(){
-    var pattern = /^[a-zA-Z]*$/; //We want only letters
-    var fname = $("#registration_fname").val();
+    pattern = /^[a-zA-Z]*$/; //We want only letters
+    fname = $("#registration_fname").val();
     if(pattern.test(fname) && fname !== ''){
         $("#fname_error_message").hide();
         $("#registration_fname").css("border-bottom","2px solid #34f358");
@@ -123,8 +138,8 @@ function check_fname(){
 }
 
 function check_lname(){
-    var pattern = /^[a-zA-Z]*$/;
-    var lname = $("#registration_lname").val();
+    pattern = /^[a-zA-Z]*$/;
+    lname = $("#registration_lname").val();
     if(pattern.test(lname) && lname !== ''){
         $("#lname_error_message").hide();
         $("#registration_lname").css("border-bottom","2px solid #34f358");
@@ -183,9 +198,10 @@ function check_if_exists(){
 
 
 function check_password(){
-    var password_length = $("#registration_password").val().length;
-    if(password_length < 8){
-        $("#password_error_message").html("Atleast 8 characters");
+    pattern = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/;
+    password = $("#registration_password").val();
+    if(!pattern.test(password)){
+        $("#password_error_message").html("Password too weak. (minimum 8 characters, 1 Uppercase, 1 number and 1 special character");
         $("#password_error_message").show();
         $("#registration_password").css("border-bottom","2px solid #F90A0A");
         error_password = true;

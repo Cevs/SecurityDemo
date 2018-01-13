@@ -23,7 +23,6 @@
             <input type="text" id="username" name="username" placeholder="username"/>
             <input type="password" id="password" name="password" placeholder="password"/>
             <button type="submit" >login</button>
-            <p class="message-forgot-password"><strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
 
 
             <div th:if="${param.error}" class="alert alert-danger login-message">
@@ -39,6 +38,7 @@
                 <strong><p th:text="${message}"></p></strong>
             </div>
 
+            <p class="message-forgot-password"><strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
             <p class="message">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
 
         </form>
