@@ -26,7 +26,13 @@
 
 
             <div th:if="${param.error}" class="alert alert-danger login-message">
-                <strong>Invalid username or password.</strong>
+                <div th:if="${param.disabled}">
+                    <strong>Account is not activated yet</strong>
+                </div>
+                <div th:unless="${param.disabled}">
+                    <strong>Invalid username or password.</strong>
+                </div>
+
             </div>
             <div th:if="${param.logout}" class="notification">
                 You have been logged out.

@@ -26,8 +26,7 @@ public class User {
     private boolean enabled;
 
     public User(){
-        //super();
-        this.enabled = false;
+        super();
     }
 
     public User(User user) {
@@ -37,6 +36,7 @@ public class User {
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.roles = user.getRoles();
+        this.enabled = user.isEnabled();
     }
 
     public long getId() {

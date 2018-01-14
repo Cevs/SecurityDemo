@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
@@ -26,6 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomUserDetailsService userDetailsService;
     @Autowired
     private CustomWebAuthenticationDetailsSource authenticationDetailsSource;
+    @Autowired
+    private AuthenticationFailureHandler myAuthenticationFailureHandler;
+    @Autowired
+    private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
 
 
     @Override
@@ -48,8 +54,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/index")
+
                 .failureUrl("/login?error=true")
+                .failureHandler(myAuthenticationFailureHandler)
+                .successHandler(myAuthenticationSuccessHandler)
+                .defaultSuccessUrl("/index")
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .permitAll();
     }
