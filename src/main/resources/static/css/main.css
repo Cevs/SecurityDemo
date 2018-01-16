@@ -54,10 +54,12 @@
     text-decoration: none;
 }
 
-.form .message-forgot-password a{
-    text-decoration: none;
+#create-account{
+    margin:0 !important;
 }
-
+#forgot-password a{
+    color:#3D95CF;
+}
 .links{
     padding-top:10px;
     text-align: center;
@@ -113,6 +115,25 @@
     color: #EF3B3A;
 }
 
+label {
+    display: inline-block;
+}
+.checkbox{
+    margin-top:15px;
+    width: 100%;
+    white-space: nowrap;
+    display:inline-block;
+}
+#twoFaCheckbox{
+    margin:0;
+    font-size: 13px;
+    width:auto;
+    display:inline-block;
+}
+.checkbox-text{
+    font-size: 12px;
+    float:left;
+}
 .notification{
     color: red;
     padding-top:10px;

@@ -5,6 +5,7 @@ import com.example.SecurityDemo.exceptions.UserAlreadyExistException;
 import com.example.SecurityDemo.domain.User;
 import com.example.SecurityDemo.domain.VerificationToken;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
 public interface IUserService {
@@ -28,4 +29,10 @@ public interface IUserService {
     void createPasswordResetTokenForUser(User user, String token);
 
     void changePassword(User user, String newPassword);
+
+    String validateVerificationToken(String token);
+
+    String generateQRUrl(User user) throws UnsupportedEncodingException;
+
+    User update2FA(boolean use2FA);
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:if="${#authentication.principal.using2FA}">
+    You are using Two-step authentication
+    <a href="#" onclick="disable2FA()">Disable 2FA</a>
+</div>
+<div th:if="${! #authentication.principal.using2FA}">
+    You are not using Two-step authentication
+    <a href="#" onclick="enable2FA()">Enable 2FA</a>
+</div>
+<br/>
+<div id="qr" style="display:none;">
+    <p>Scan this Barcode using Google Authenticator app on your phone </p>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript">
+    function enable2FA(){
+        set2FA(true);
+    }
+    function disable2FA(){
+        set2FA(false);
+    }
+    function set2FA(use2FA){
+        $.post( "/user/update/2fa", { use2FA: use2FA } , function( data ) {
+            if(use2FA){
+                $("#qr").append('<img src="'+data.message+'" />').show();
+            }else{
+                window.location.reload();
+            }
+        });
+    }
+</script>
+</body>
+</html>

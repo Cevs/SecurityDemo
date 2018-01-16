@@ -11,10 +11,15 @@ import com.example.SecurityDemo.repositories.RoleRepository;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.repositories.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -32,6 +37,12 @@ public class UserService implements IUserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+    public static final String TOKEN_VALID = "valid";
+
+    public static String QR_PREFIX ="https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=";
+    public static String APP_NAME = "SecurityDemo";
     @Override
     public User registerNewUserAccount(UserDto accountDto) throws UserAlreadyExistException {
 
@@ -47,6 +58,7 @@ public class UserService implements IUserService {
         user.setEmail(accountDto.getEmail());
         user.setRoles(getRoles());
         user.setEnabled(false);
+        user.setUsing2FA(accountDto.isUsing2fa());
 
         return userRepository.save(user);
     }
@@ -100,6 +112,46 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         passwordResetTokenRepository.delete(user.getId());
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        final VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if(verificationToken == null){
+            return TOKEN_INVALID;
+        }
+
+        final User user = verificationToken.getUser();
+        final LocalDateTime time = LocalDateTime.now();
+        if(time.isAfter(verificationToken.getExpiryDate())){
+            tokenRepository.delete(verificationToken);
+            return TOKEN_EXPIRED;
+        }
+
+        user.setEnabled(true);
+        userRepository.save(user);
+        return TOKEN_VALID;
+    }
+
+    @Override
+    public String generateQRUrl(User user) throws UnsupportedEncodingException {
+
+        return QR_PREFIX + URLEncoder.encode(String.format(
+                "otpauth://totp/%s:%s?secret=%s&issuer=%s",
+                APP_NAME, user.getEmail(), user.getSecret(), APP_NAME),
+                "UTF-8");
+
+    }
+
+    @Override
+    public User update2FA(boolean use2FA) {
+        Authentication curAuth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) curAuth.getPrincipal();
+        currentUser.setUsing2FA(use2FA);
+        currentUser = userRepository.save(currentUser);
+        Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(), curAuth.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        return currentUser;
     }
 
     @Override

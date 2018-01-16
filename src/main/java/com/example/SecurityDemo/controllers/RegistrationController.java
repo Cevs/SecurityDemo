@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,34 +75,44 @@ public class RegistrationController {
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
     public String confirmRegistration(WebRequest request, ModelMap model, @RequestParam("token") String token,
-                                      RedirectAttributes redirectAttributes){
-
+                                      RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
         Locale locale = request.getLocale();
-        VerificationToken verificationToken = userService.getVerificationToken(token);
-        if(verificationToken == null){
-            String message = messages.getMessage("auth.message.invalidToken", null, locale);
-            model.addAttribute("message", message);
-            return "redirect:/badUser";
+        final String result = userService.validateVerificationToken(token);
+        if(result.equals("valid")){
+            final User user = userService.getUser(token);
+            if(user.isUsing2FA()){
+                model.addAttribute("qr", userService.generateQRUrl(user));
+                redirectAttributes.addFlashAttribute("model",model);
+                return "redirect:/qrcode.html?lang=" + locale.getLanguage();
+            }
+            //Upitno dal ovo tu treba biti. Ako ne prebacit u konstruktor usera
+            user.setEnabled(true);
+            model.addAttribute("message",messages.getMessage("message.accountVerified",null,locale));
+            return "redirect:/login?lang="+locale.getLanguage();
         }
+        model.addAttribute("message",messages.getMessage("auth.message."+result, null, locale));
+        model.addAttribute("expired","expired".equals(result));
+        model.addAttribute("token",token);
+        return "redirect:/badUser?lang="+locale.getLanguage();
 
-        User user = verificationToken.getUser();
-        LocalDateTime time = LocalDateTime.now();
-        if(time.isAfter(verificationToken.getExpiryDate())){
-            String messageValue = messages.getMessage("auth.message.expired", null, locale);
-            model.addAttribute("message",messageValue);
-            model.addAttribute("expired",true);
-            model.addAttribute("token",token);
-
-            redirectAttributes.addFlashAttribute("model",model);
-            return "redirect:/badUser";
-        }
-
-        user.setEnabled(true);
-        userService.saveRegisteredUser(user);
-        model.addAttribute("message",messages.getMessage("message.accountVerified",null,locale));
-        return "redirect:/login";
     }
 
+    @RequestMapping(value = "/qrcode", method = RequestMethod.GET)
+    public ModelAndView qrcode(@ModelAttribute("model") ModelMap model){
+        String s = (String) model.get("qr");
+        return new ModelAndView("qrcode",model );
+    }
+
+    @RequestMapping(value = "/user/update/twoFactorSettings", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse modifyUser2FA(@RequestParam("use2FA") boolean use2FA) throws UnsupportedEncodingException
+    {
+        User user = userService.update2FA(use2FA);
+        if(use2FA){
+            return new GenericResponse(userService.generateQRUrl(user));
+        }
+        return null;
+    }
     @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse resendRegistrationToken(

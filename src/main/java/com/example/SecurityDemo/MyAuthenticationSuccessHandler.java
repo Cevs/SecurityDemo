@@ -1,5 +1,6 @@
 package com.example.SecurityDemo;
 
+import com.example.SecurityDemo.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -34,7 +35,8 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     private String determineTargetUrl(Authentication authentication) {
 
         //To do: check for privileges
-        return "index";
+
+        return  "index";
 
     }
 }

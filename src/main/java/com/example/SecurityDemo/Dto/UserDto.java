@@ -26,6 +26,8 @@ public class UserDto {
     private String password;
     private String matchingPassword;
 
+    private boolean using2fa;
+
     public String getFirstName() {
         return firstName;
     }
@@ -64,5 +66,13 @@ public class UserDto {
 
     public void setMatchingPassword(String matchingPassword) {
         this.matchingPassword = matchingPassword;
+    }
+
+    public boolean isUsing2fa() {
+        return using2fa;
+    }
+
+    public void setUsing2fa(boolean using2fa) {
+        this.using2fa = using2fa;
     }
 }

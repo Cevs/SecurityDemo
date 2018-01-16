@@ -1,5 +1,7 @@
 package com.example.SecurityDemo;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -22,13 +24,17 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
     }
 
     private void handle(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException {
-        String message = authenticationException.getMessage();
-        if(message == "User is disabled"){
+
+        if(authenticationException instanceof BadCredentialsException){
+            redirectStrategy.sendRedirect(request,response, "/login?error=true&credentials=true");
+        }
+        else if(authenticationException instanceof DisabledException){
             redirectStrategy.sendRedirect(request,response, "/login?error=true&disabled=true");
         }
         else{
-            redirectStrategy.sendRedirect(request,response, "/login?error=true");
+            redirectStrategy.sendRedirect(request,response, "/login?error=true&unknown=true");
         }
+
     }
 
 }

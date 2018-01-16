@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+    <!-- my css -->
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+</head>
+<body>
+<div class="login-page">
+    <div class="form">
+        <p>
+            Scan this Barcode using Google Authenticator app on your phone
+            to use it later in login
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank">Android</a> and
+            <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605" arget="_blank">iPhone</a>
+        </p>
+        <img th:src="${qr}"/>
+        <br/>
+        <button onclick="location.href='/login'" th:text="#{label.login}" class="btn btn-primary"></button>
+    </div>
+</div>
+
+</body>
+</html>

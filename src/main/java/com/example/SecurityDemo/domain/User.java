@@ -1,5 +1,7 @@
 package com.example.SecurityDemo.domain;
 
+import org.jboss.aerogear.security.otp.api.Base32;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -24,9 +26,14 @@ public class User {
     private Set<Role> roles;
     @Column(name="enabled")
     private boolean enabled;
+    @Column(name="using_two_factor_authentication")
+    private boolean isUsing2FA;
+    @Column(name = "two_factost_authentication_secret")
+    private String secret;
 
     public User(){
         super();
+        this.secret = Base32.random();
     }
 
     public User(User user) {
@@ -37,6 +44,7 @@ public class User {
         this.password = user.getPassword();
         this.roles = user.getRoles();
         this.enabled = user.isEnabled();
+        this.isUsing2FA = user.isUsing2FA();
     }
 
     public long getId() {
@@ -93,5 +101,21 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isUsing2FA() {
+        return isUsing2FA;
+    }
+
+    public void setUsing2FA(boolean using2FA) {
+        isUsing2FA = using2FA;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 }

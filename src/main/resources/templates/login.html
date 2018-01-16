@@ -22,18 +22,9 @@
         <form  th:action="@{/login}" method="post" class="login-form">
             <input type="text" id="username" name="username" placeholder="username"/>
             <input type="password" id="password" name="password" placeholder="password"/>
+            <input type="text" name="code" placeholder="Google Authenticator Verification Code"/>
             <button type="submit" >login</button>
 
-
-            <div th:if="${param.error}" class="alert alert-danger login-message">
-                <div th:if="${param.disabled}">
-                    <strong>Account is not activated yet</strong>
-                </div>
-                <div th:unless="${param.disabled}">
-                    <strong>Invalid username or password.</strong>
-                </div>
-
-            </div>
             <div th:if="${param.logout}" class="notification">
                 You have been logged out.
             </div>
@@ -44,8 +35,20 @@
                 <strong><p th:text="${message}"></p></strong>
             </div>
 
-            <p class="message-forgot-password"><strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
-            <p class="message">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
+            <p id="forgot-password" class="message forgot-password">Forgot password? <strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
+            <p id = "create-account" class="message create-account">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
+
+            <div th:if="${param.error}" class="alert alert-danger login-message">
+                <div th:if="${param.disabled}">
+                    <strong>Account is not activated yet</strong>
+                </div>
+                <div th:if="${param.credentials}">
+                    <strong>Invalid username, password or verification code.</strong>
+                </div>
+                <div th:if="${param.unknown}">
+                    <strong>Unknown error</strong>
+                </div>
+            </div>
 
         </form>
     </div>
