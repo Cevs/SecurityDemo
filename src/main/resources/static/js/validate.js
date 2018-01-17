@@ -4,6 +4,7 @@ var error_email;
 var error_email_exist;
 var error_password;
 var error_repassword;
+var  serverContext = "https://localhost:8443";
 
 $(document).ready(function () {
 
@@ -87,7 +88,6 @@ $(document).ready(function () {
 function register(event){
 
     event.preventDefault();
-    serverContext = "http://localhost:8080";
     var formData = $('form').serialize();
     $.post(serverContext+"/user/registration",formData, function(data){
         if(data.message === "success"){
@@ -173,7 +173,6 @@ function check_email() {
 }
 
 function check_if_exists(){
-    serverContext = "http://localhost:8080";
     $.ajax({
         async: false,
         type: "POST",

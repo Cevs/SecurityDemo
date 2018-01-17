@@ -25,6 +25,9 @@
             <input type="text" name="code" placeholder="Google Authenticator Verification Code"/>
             <button type="submit" >login</button>
 
+            <p id="forgot-password" class="message forgot-password">Forgot password? <strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
+            <p id = "create-account" class="message create-account">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
+
             <div th:if="${param.logout}" class="notification">
                 You have been logged out.
             </div>
@@ -34,9 +37,6 @@
             <div th:if="${message}" class="alert alert-warning login-message" >
                 <strong><p th:text="${message}"></p></strong>
             </div>
-
-            <p id="forgot-password" class="message forgot-password">Forgot password? <strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
-            <p id = "create-account" class="message create-account">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
 
             <div th:if="${param.error}" class="alert alert-danger login-message">
                 <div th:if="${param.disabled}">

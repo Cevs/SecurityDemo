@@ -50,18 +50,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/resendRegistrationToken","/forgetPassword", "/user/resetPassword*","/user/changePassword*",
                         "/qrcode*","/twoFactorSettings*",
                         "/css/**", "/js/**", "/images/**","/resources/**").permitAll()
+                .antMatchers("/anonymous*").anonymous()
                 .antMatchers("/user/updatePassword","/user/savePassword*", "/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-
+                //.loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/index")
                 .failureUrl("/login?error=true")
                 .failureHandler(myAuthenticationFailureHandler)
                 .successHandler(myAuthenticationSuccessHandler)
-                .defaultSuccessUrl("/index")
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .permitAll();
+        http.requiresChannel()
+                .anyRequest().requiresSecure();
+
     }
 
     @Bean

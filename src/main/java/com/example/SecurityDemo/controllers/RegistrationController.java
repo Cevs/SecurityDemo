@@ -120,10 +120,8 @@ public class RegistrationController {
 
         VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
         User user = userService.getUser(newToken.getToken());
-        String appUrl =
-                "http://"+request.getServerName()+ ":"+request.getServerPort()+ request.getContextPath();
         SimpleMailMessage email =
-                constructResendVerificationTokenEmail(appUrl, request.getLocale(),newToken, user);
+                constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(),newToken, user);
         mailSender.send(email);
 
         return new GenericResponse(
@@ -243,7 +241,7 @@ public class RegistrationController {
         }
     }
     private String getAppUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        return "https://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
 }
