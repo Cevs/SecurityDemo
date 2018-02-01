@@ -1,5 +1,4 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
-
 .login-page {
     width: 360px;
     padding: 8% 0 0;
@@ -126,12 +125,16 @@ label {
 }
 #twoFaCheckbox{
     margin:0;
-    font-size: 13px;
     width:auto;
     display:inline-block;
+    flaot:left;
 }
+
+input[type=checkbox] {
+    transform: scale(1.3);
+}
+
 .checkbox-text{
-    font-size: 12px;
     float:left;
 }
 .notification{
@@ -188,6 +191,8 @@ h1,h2,h3{
 }
 
 body {
+    margin:0;
+    padding:0;
     background: #309DE5; /* fallback for old browsers */
     background: -webkit-linear-gradient(right, #309DE5, #8DC26F);
     background: -moz-linear-gradient(right, #309DE5, #8DC26F);
