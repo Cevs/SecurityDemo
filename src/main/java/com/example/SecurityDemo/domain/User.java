@@ -31,9 +31,6 @@ public class User {
     private boolean isUsing2FA;
     @Column(name = "two_factor_authentication_secret")
     private String secret;
-    @Column(name="gender")
-    @Enumerated(EnumType.STRING)
-    private Gender genderInfo;
 
     public User(){
         super();
@@ -122,12 +119,5 @@ public class User {
     public void setSecret(String secret) {
         this.secret = secret;
     }
-
-    public Gender getGenderInfo() {
-        return genderInfo;
-    }
-
-    public void setGenderInfo(Gender genderInfo) {
-        this.genderInfo = genderInfo;
-    }
+    
 }

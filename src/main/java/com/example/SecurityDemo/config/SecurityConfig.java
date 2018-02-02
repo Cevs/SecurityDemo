@@ -3,7 +3,14 @@ package com.example.SecurityDemo.config;
 import com.example.SecurityDemo.domain.CustomWebAuthenticationDetailsSource;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.service.CustomUserDetailsService;
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -43,11 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(authProvider());
     }
 
-
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        http.requiresChannel()
+                .anyRequest().requiresSecure();
         http.authorizeRequests()
                 .antMatchers("/login*","/registrationConfirm**","/badUser**","/user/registration*",
                         "/emailError*","/resources/**","/successRegister*","/successRegister*", "/user/exist*",
@@ -73,9 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1).sessionRegistry(sessionRegistry())
                 .and()
                 .sessionFixation().migrateSession();
-        http.requiresChannel()
-                .anyRequest().requiresSecure();
-
 
     }
 
@@ -100,5 +104,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public HttpSessionEventPublisher httpSessionEventPublisher(){
         return new HttpSessionEventPublisher();
     }
+
 
 }
