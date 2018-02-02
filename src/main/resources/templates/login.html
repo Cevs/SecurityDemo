@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <!-- my css -->
     <link rel="stylesheet" type="text/css" href="/css/main.css"/>
@@ -18,7 +18,6 @@
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
-
 <div class="login-page">
     <div class="form">
         <form  th:action="@{/login}" method="post" class="login-form">
@@ -30,8 +29,8 @@
             <p id="forgot-password" class="message forgot-password">Forgot password? <strong><a th:href="@{/forgetPassword}" th:text="#{message.forgotPassword}">reset</a></strong></p>
             <p id = "create-account" class="message create-account">Not registered? <strong><a th:href="@{/user/registration}">Create an account</a></strong></p>
 
-            <div th:if="${param.logout}" class="notification">
-                You have been logged out.
+            <div th:if="${param.logSucc}" class="alert alert-warning login-message">
+                <strong><p th:text="#{message.logoutSucc}"></p></strong>
             </div>
             <!--<div th:if="${param.error != null}"
                  th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error

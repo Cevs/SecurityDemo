@@ -1,5 +1,6 @@
 package com.example.SecurityDemo.config;
 
+import com.example.SecurityDemo.CustomLogoutSuccessHandler;
 import com.example.SecurityDemo.domain.CustomWebAuthenticationDetailsSource;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.service.CustomUserDetailsService;
@@ -43,6 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationFailureHandler myAuthenticationFailureHandler;
     @Autowired
     private AuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    @Autowired
+    private CustomLogoutSuccessHandler myCustomLogoutSuccessHandler;
 
 
     @Override
@@ -52,6 +55,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.sessionManagement()
+                .invalidSessionUrl("/invalidSession")
+                .maximumSessions(1).sessionRegistry(sessionRegistry())
+                .and()
+                .sessionFixation().migrateSession();
         http.csrf().disable();
         http.requiresChannel()
                 .anyRequest().requiresSecure();
@@ -59,27 +67,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*","/registrationConfirm**","/badUser**","/user/registration*",
                         "/emailError*","/resources/**","/successRegister*","/successRegister*", "/user/exist*",
                         "/user/resendRegistrationToken","/forgetPassword", "/user/resetPassword*","/user/changePassword*",
-                        "/qrcode*","/twoFactorSettings*",
+                        "/qrcode*","/twoFactorSettings*", "/logout*",
                         "/css/**", "/js/**", "/images/**","/resources/**").permitAll()
                 .antMatchers("/anonymous*").anonymous()
                 .antMatchers("/user/updatePassword","/user/savePassword*", "/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                //.loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/index")
-                .failureUrl("/login?error=true")
-                .failureHandler(myAuthenticationFailureHandler)
-                .successHandler(myAuthenticationSuccessHandler)
-                .authenticationDetailsSource(authenticationDetailsSource)
-                .permitAll()
+                    .formLogin()
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/index")
+                        .failureUrl("/login?error=true")
+                        .failureHandler(myAuthenticationFailureHandler)
+                        .successHandler(myAuthenticationSuccessHandler)
+                        .authenticationDetailsSource(authenticationDetailsSource)
                 .and()
-                .sessionManagement()
-                .invalidSessionUrl("/invalidSession")
-                .maximumSessions(1).sessionRegistry(sessionRegistry())
-                .and()
-                .sessionFixation().migrateSession();
+                .logout()
+                    .logoutSuccessHandler(myCustomLogoutSuccessHandler)
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
+                    .permitAll();
 
     }
 
@@ -100,6 +106,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public SessionRegistry sessionRegistry(){
         return new SessionRegistryImpl();
     }
+
+    /*
+        Enable session-control support
+        This is essential to make sure that the Spring Security session registry is notified when the session is destroyed.
+     */
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher(){
         return new HttpSessionEventPublisher();
