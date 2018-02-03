@@ -201,7 +201,11 @@ public class RegistrationController {
     private SimpleMailMessage constructResetTokenEmail(String contextPath, Locale locale, String token, User user) {
         String url = contextPath + "/user/changePassword?id="+user.getId() + "&token="+token;
         String message = messages.getMessage("message.resetPassword", null, locale);
-        return constructEmail("Reset Password", message + " \r\n"+url,user);
+        if(user.isUsing2FA()) {
+            message += "\nTwo Factor QRcode: " + userService.generateQRUrl(user) +"\n";
+        }
+        message +="\nReset link:";
+        return constructEmail("Reset Password:", message + " \r\n"+url,user);
     }
 
     private SimpleMailMessage constructResendVerificationTokenEmail

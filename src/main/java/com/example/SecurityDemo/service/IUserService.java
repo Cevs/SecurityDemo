@@ -32,7 +32,7 @@ public interface IUserService {
 
     String validateVerificationToken(String token);
 
-    String generateQRUrl(User user) throws UnsupportedEncodingException;
+    String generateQRUrl(User user);
 
     User update2FA(boolean use2FA);
 }
