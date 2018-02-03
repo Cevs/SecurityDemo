@@ -23,9 +23,19 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
     @Autowired
     ActiveUserStore activeUserStore;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+        final String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            loginAttemptService.loginSucceeded(request.getRemoteAddr());
+        } else {
+            loginAttemptService.loginSucceeded(xfHeader.split(",")[0]);
+        }
+
         handle(request, response, authentication);
         final HttpSession session = request.getSession(true);
         if(session != null){

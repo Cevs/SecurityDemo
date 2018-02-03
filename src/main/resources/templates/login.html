@@ -41,10 +41,13 @@
 
             <div th:if="${param.error}" class="alert alert-danger login-message">
                 <div th:if="${param.disabled}">
-                    <strong>Account is not activated yet</strong>
+                    <strong><p th:text="#{message.notActivated}"></p></strong>
                 </div>
                 <div th:if="${param.credentials}">
-                    <strong>Invalid username, password or verification code.</strong>
+                    <strong><p th:text="#{message.authenticationFailed}"></p></strong>
+                </div>
+                <div th:if="${param.ban}">
+                    <strong><p th:text="#{message.ipBan}"></p></strong>
                 </div>
                 <div th:if="${param.unknown}">
                     <strong>Unknown error</strong>
