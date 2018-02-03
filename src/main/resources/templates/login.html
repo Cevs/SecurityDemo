@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="UTF-8"/>
+    <title>Login</title>
     <!-- my css -->
     <link rel="stylesheet" type="text/css" href="/css/main.css"/>
     <!-- Bootstrap -->
@@ -12,15 +14,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="/js/main.js"/>
 
-    <meta charset="UTF-8"/>
-    <title>Login</title>
 </head>
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
 <div class="login-page">
     <div class="form">
-        <form  th:action="@{/login}" method="post" class="login-form">
+        <form  th:action="@{/login} + '?' + ${_csrf.parameterName} + '=' + ${_csrf.token}" method="post" class="login-form">
             <input type="text" id="username" name="username" placeholder="username"/>
             <input type="password" id="password" name="password" placeholder="password"/>
             <input type="text" name="code" placeholder="Google Authenticator Verification Code"/>

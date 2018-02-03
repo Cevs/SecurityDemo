@@ -55,6 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf()
+                .ignoringAntMatchers("/user/registration*","/user/exist*");
         http.sessionManagement()
                 .invalidSessionUrl("/invalidSession")
                 .maximumSessions(1).sessionRegistry(sessionRegistry())
