@@ -30,9 +30,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +55,10 @@ public class RegistrationController {
     private ISecurityUserService securityUserService;
 
     @RequestMapping(value="/user/registration", method = RequestMethod.GET)
-    public String showRegistrationForm(WebRequest request, Model model){
+    public String showRegistrationForm(HttpServletResponse response,WebRequest request, Model model){
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         UserDto userDto = new UserDto();
         model.addAttribute("user", userDto);
         return "registration";
@@ -184,7 +187,10 @@ public class RegistrationController {
     }
 
     @RequestMapping(value = "/forgetPassword")
-    public String forgetPassword(){
+    public String forgetPassword(HttpServletResponse response){
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         return "forgetPassword";
     }
 

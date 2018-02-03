@@ -60,7 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1).sessionRegistry(sessionRegistry())
                 .and()
                 .sessionFixation().migrateSession();
-        http.csrf().disable();
         http.requiresChannel()
                 .anyRequest().requiresSecure();
         http.authorizeRequests()
@@ -86,7 +85,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID")
                     .permitAll();
-
     }
 
     @Bean
