@@ -109,11 +109,22 @@ public class UserService implements IUserService {
         passwordResetTokenRepository.save(myToken);
     }
 
+    /*
+        Called when user forget password and want to reset it
+     */
     @Override
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         passwordResetTokenRepository.delete(user.getId());
+    }
+
+    /*
+        Called when user changing password from within application.
+    */
+    public void updatePassword(User user, String newPassword){
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     @Override

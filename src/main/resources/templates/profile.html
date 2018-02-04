@@ -76,7 +76,7 @@
             </div>
 
             <div class="col-lg-9  admin-content" id="change-password" style="padding-top:1em;">
-                <form action="/password" method="post">
+                <form id="updatePasswordForm">
 
                     <div class="card" style="margin: 0em 1em 1em; border-color: #37474F;">
                         <div class="card-header text-white" style="background-color: #263238;">
@@ -85,13 +85,14 @@
                         <div class="card-body p-2">
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <label for="new_password">New Password</label>
-                                    <input type="password" class="form-control" name="password" id="new_password" />
-                                    <label for="re_password">Reenter password</label>
-                                    <input type="password" class="form-control" name="password" id="re_password" />
+                                    <label for="password">New Password</label>
+                                    <input type="password" class="form-control" name="newPassword" id="password" />
+                                    <label for="matchPassword">Reenter password</label>
+                                    <input type="password" class="form-control"  id="matchPassword" />
+                                    <div id="globalError" class="registration-alert" style="display:none" th:text="#{PasswordMatches.user}">error</div>
                                 </div>
                                 <div class="col-md-3 mt-2">
-                                    <input type="submit" class="form-control btn btn-primary" name="submit" value="Submit"
+                                    <input type="button" class="form-control btn btn-primary" name="submit" value="Submit"
                                            id="submit" style="background-color: #263238; border-color: #37474F;"/>
                                 </div>
                             </div>
@@ -210,6 +211,63 @@
                 $("#qr").append('<img class="d-block mx-auto" src="'+data.message+'" />').show();
             }
         });
+    }
+
+    $("#submit").click(function (event){
+        formError = false;
+        checkPasswordConstraint();
+        if(formError){
+            console.log("Not ok");
+            event.preventDefault();
+        }
+        else{
+            console.log("All ok");
+            savePassword(event);
+        }
+    });
+
+    function  savePassword(event) {
+        event.preventDefault();
+        if ($("#password").val() != $("#matchPassword").val()) {
+            $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+            return;
+        }
+        var formData = $('form').serialize();
+        token = $('input#csrf-token').attr("content");
+
+        $.ajax({
+            type: "POST",
+            url: serverContext + "/user/profile/savePassword",
+            headers: {"X-CSRF-TOKEN": token},
+            data: formData,
+            success: function (data) {
+                $("#password").val("")
+                $("#matchPassword").val("");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(jqXHR)
+            }
+        });
+    }
+
+    function checkPasswordConstraint(){
+        pattern = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/;
+        password = $("#password").val();;
+        if(pattern.test(password)){
+            $("#globalError").hide();
+        }
+        else{
+            $("#globalError").show().html("Password too weak (minimum 8 characters, 1 uppercase, 1 number and 1 special)");
+            formError = true;
+        }
+    }
+
+    function checkPasswordMatch(){
+        password = $("#password").val();
+        rePassword = $("#matchPassword").val();
+        if(password !== rePassword){
+            formError = true;
+        }
     }
 </script>
 </html>
