@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <!--Iconic Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css"/>
+    <!--jQuery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div id="viewport">
+    <!-- Sidebar -->
+    <div id="sidebar" >
+        <header>
+            <p>Settings</p>
+        </header>
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a href="#" data-target-id="profile" class="nav-link">
+                    <i class="zmdi zmdi-account-o"></i>
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-target-id="change-password" class="nav-link">
+                    <i class="zmdi zmdi-lock-outline"></i>
+                    Change Password
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-target-id="settings" class="nav-link">
+                    <i class="zmdi zmdi-settings"></i>Settings
+                </a>
+            </li>
+
+        </ul>
+    </div>
+    <!-- Content -->
+    <div id="content">
+        <div class="container-fluid">
+
+            <div class="col-lg-9  admin-content" id="profile" style="padding-top:1em;">
+                <div class="card" style="margin: 0em 1em 1em; border-color: #37474F;">
+                    <div class="card-header text-white" style="background-color: #263238;">First name</div>
+                    <div class="card-body p-2" th:text="${firstName}"></div>
+                </div>
+
+                <div class="card" style="margin: 1em; border-color: #37474F;">
+                    <div class="card-header text-white" style="background-color: #263238;">Last name</div>
+                    <div class="card-body p-2" th:text="${lastName}"></div>
+                </div>
+
+                <div class="card" style="margin: 1em; border-color: #37474F;">
+                    <div class="card-header text-white" style="background-color: #263238;">
+                    Email (username)
+                </div>
+                    <div class="card-body p-2" th:text="${email}"></div>
+                </div>
+
+                <div class="card" style="margin: 1em; border-color: #37474F;">
+                    <div class="card-header text-white" style="background-color: #263238;">
+                        Role
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="badge badge-success" th:text="${role}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9  admin-content" id="change-password" style="padding-top:1em;">
+                <form action="/password" method="post">
+
+                    <div class="card" style="margin: 0em 1em 1em; border-color: #37474F;">
+                        <div class="card-header text-white" style="background-color: #263238;">
+                            Change password
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label for="new_password">New Password</label>
+                                    <input type="password" class="form-control" name="password" id="new_password" />
+                                    <label for="re_password">Reenter password</label>
+                                    <input type="password" class="form-control" name="password" id="re_password" />
+                                </div>
+                                <div class="col-md-3 mt-2">
+                                    <input type="submit" class="form-control btn btn-primary" name="submit" value="Submit"
+                                           id="submit" style="background-color: #263238; border-color: #37474F;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="card" style="margin: 1em; border-color: #37474F;">
+                    <div class="card-header text-white" style="background-color: #263238;">Two Factor authentication</div>
+                    <div class="card-body p-2">
+                        <div id="disable2FA">
+                            You are using Two-step authentication
+                            <a href="#" onclick="disable2FA()">Disable 2FA</a>
+                        </div>
+                        <div id="enable2FA">
+                            You are not using Two-step authentication
+                            <a href="#" onclick="enable2FA()">Enable 2FA</a>
+                        </div>
+                        <br/>
+                        <div id="qr-container">
+                            <div id="qr" style="display:none;">
+                            </div>
+                            <input type="button" class="form-control btn-primary"  value="Generate" id="btnGenerate" onclick="generateNewQRUrl()"
+                                   style=" display:none; background-color: #263238; border-color: #37474F;"/>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id= "csrf-token" th:name="${_csrf.parameterName}" th:content="${_csrf.token}" />
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        serverContext = "https://localhost:8443";
+        check2FA();
+        var navItems = $('.nav li > a');
+        var navListItems = $('.nav li');
+        var allWells = $('.admin-content');
+        var allWellsExceptFirst = $('.admin-content:not(:first)');
+        allWellsExceptFirst.hide();
+        navItems.click(function(e)
+        {
+            e.preventDefault();
+            navListItems.removeClass('active');
+            $(this).closest('li').addClass('active');
+            allWells.hide();
+            var target = $(this).attr('data-target-id');
+            var title  = $(this).closest('p').text();
+            $('#' + target).show();
+        });
+
+    });
+
+    function check2FA(){
+        token = $('input#csrf-token').attr("content");
+        $.ajax({
+            type:"POST",
+            url: serverContext+"/user/use2fa",
+            headers: {"X-CSRF-TOKEN": token},
+            success:function (data) {
+                if(data === false){
+                    disable2FA();
+                }
+                else{
+                    enable2FA();
+                }
+            }
+        });
+    }
+    function enable2FA(){
+        set2FA(true);
+    }
+    function disable2FA(){
+        set2FA(false);
+    }
+    function set2FA(use2FA){
+        token = $('input#csrf-token').attr("content");
+        $.ajax({
+            type:"POST",
+            url: serverContext+"/user/update/twoFactorAuthorization",
+            headers: {"X-CSRF-TOKEN": token},
+            data:{
+                use2FA: use2FA
+            },
+            success:function (data) {
+                if(use2FA){
+                    $("#qr").append('<p class="d-block mx-auto">Scan this Barcode using Google Authenticator app on your phone </p>');
+                    $("#qr").append('<img class="d-block mx-auto" src="'+data.message+'" />').show();
+                    //("#qr").append('<input type="button" class="form-control btn-primary"  value="Generate" id="btnGenerate" onclick="generateNewQRUrl()"/>');
+                    $("#disable2FA").show();
+                    $("#enable2FA").hide();
+                    $("#btnGenerate").show();
+                }else{
+                    $("#qr").empty();
+                    $("#disable2FA").hide();
+                    $("#enable2FA").show();
+                    $("#btnGenerate").hide();
+                }
+            }
+        });
+    }
+
+    function generateNewQRUrl(){
+        token = $('input#csrf-token').attr("content");
+        $.ajax({
+           type:"POST",
+           url: serverContext +"/user/update/twoFactorAuthorization/generateNew",
+            headers: {"X-CSRF-TOKEN": token},
+            success:function (data) {
+                $("#qr > img").remove();
+                $("#qr").append('<img class="d-block mx-auto" src="'+data.message+'" />').show();
+            }
+        });
+    }
+</script>
+</html>

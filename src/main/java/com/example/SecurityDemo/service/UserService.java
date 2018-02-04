@@ -10,6 +10,7 @@ import com.example.SecurityDemo.repositories.PasswordResetTokenRepository;
 import com.example.SecurityDemo.repositories.RoleRepository;
 import com.example.SecurityDemo.repositories.UserRepository;
 import com.example.SecurityDemo.repositories.VerificationTokenRepository;
+import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -160,7 +161,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void saveRegisteredUser(User user) {
+    public User generateNewQRUrl() {
+        Authentication curAuth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) curAuth.getPrincipal();
+        currentUser.setSecret(Base32.random());
+        currentUser = userRepository.save(currentUser);
+        Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(), curAuth.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        return currentUser;
+    }
+
+    @Override
+    public void updateUser(User user) {
         userRepository.save(user);
     }
 

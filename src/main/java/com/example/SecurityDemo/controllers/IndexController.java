@@ -29,7 +29,4 @@ public class IndexController {
         String username = user.getUsername();
         return "index";
     }
-
-
-
 }

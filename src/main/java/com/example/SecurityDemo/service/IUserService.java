@@ -16,9 +16,9 @@ public interface IUserService {
 
     boolean checkIfExists(String username);
 
-    void saveRegisteredUser(User user);
-
     void createVerificationToken(User user, String token, LocalDateTime date);
+
+    void updateUser(User user);
 
     VerificationToken getVerificationToken(String token);
 
@@ -35,4 +35,6 @@ public interface IUserService {
     String generateQRUrl(User user);
 
     User update2FA(boolean use2FA);
+
+    User generateNewQRUrl();
 }

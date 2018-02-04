@@ -106,7 +106,7 @@ public class RegistrationController {
         return new ModelAndView("qrcode",model );
     }
 
-    @RequestMapping(value = "/user/update/twoFactorSettings", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/update/twoFactorAuthorization", method = RequestMethod.POST)
     @ResponseBody
     public GenericResponse modifyUser2FA(@RequestParam("use2FA") boolean use2FA) throws UnsupportedEncodingException
     {
@@ -116,6 +116,22 @@ public class RegistrationController {
         }
         return null;
     }
+
+    @RequestMapping(value = "/user/update/twoFactorAuthorization/generateNew", method = RequestMethod.POST)
+    @ResponseBody
+    public GenericResponse modifyUser2FA() throws UnsupportedEncodingException
+    {
+        User user = userService.generateNewQRUrl();
+        return new GenericResponse(userService.generateQRUrl(user));
+    }
+
+    @RequestMapping(value = "/user/use2fa", method=RequestMethod.POST)
+    @ResponseBody
+    public boolean use2fa(){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user.isUsing2FA();
+    }
+
     @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse resendRegistrationToken(
