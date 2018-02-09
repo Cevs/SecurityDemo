@@ -86,17 +86,16 @@ public class RegistrationController {
             if(user.isUsing2FA()){
                 model.addAttribute("qr", userService.generateQRUrl(user));
                 redirectAttributes.addFlashAttribute("model",model);
-                return "redirect:/qrcode.html?lang=" + locale.getLanguage();
+                return "qrcode";
             }
-            //Upitno dal ovo tu treba biti. Ako ne prebacit u konstruktor usera
             user.setEnabled(true);
             model.addAttribute("message",messages.getMessage("message.accountVerified",null,locale));
-            return "redirect:/login?lang="+locale.getLanguage();
+            return "login";
         }
         model.addAttribute("message",messages.getMessage("auth.message."+result, null, locale));
         model.addAttribute("expired","expired".equals(result));
         model.addAttribute("token",token);
-        return "redirect:/badUser?lang="+locale.getLanguage();
+        return "badUser";
 
     }
 
@@ -148,16 +147,6 @@ public class RegistrationController {
         );
     }
 
-    @RequestMapping("/successRegister")
-    public String SuccessRegister(){
-        return "successRegister";
-    }
-
-    @RequestMapping("/badUser")
-    public ModelAndView BadUser(@ModelAttribute("model") ModelMap model){
-        return new ModelAndView("badUser",model);
-    }
-
     @RequestMapping(value = "/user/exist", method = RequestMethod.POST, params="email")
     @ResponseBody
     public boolean checkUser(HttpServletRequest request, @RequestParam String email){
@@ -172,9 +161,9 @@ public class RegistrationController {
         if(result != null){
             model.addAttribute("message",messages.getMessage("auth.message."+result,
                     null, locale));
-            return "redirect:/login?lang="+locale.getLanguage();
+            return "login";
         }
-        return "redirect:/user/updatePassword?lang="+locale.getLanguage();
+        return "redirect:/user/updatePassword";
     }
 
     @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
