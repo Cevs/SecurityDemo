@@ -16,17 +16,8 @@ import java.util.List;
 @Controller
 public class IndexController {
 
-    @Autowired
-    LoggedUser loggedUser;
-    @Autowired
-    ActiveUserStore activeUserStore;
-
     @RequestMapping(value ={"/", "/index"})
     public String index(HttpServletRequest request){
-        HttpSession session = request.getSession(false);
-        List<String> list = activeUserStore.getUsers();
-        LoggedUser user = (LoggedUser) session.getAttribute("user");
-        String username = user.getUsername();
         return "index";
     }
 }
